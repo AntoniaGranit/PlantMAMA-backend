@@ -133,6 +133,62 @@ app.post("/register", async (req, res) => {
   }
 })
 
+// Log in endpoint
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username: username })
+    if (user && bcrypt.compareSync(password, user.password)) {
+      res.status(200).json({
+        success: true,
+        response: {
+          username: user.username,
+          id: user._id,
+          accessToken: user.accessToken
+        }
+      })
+    } else {
+      res.status(400).json({
+        success: false,
+        response: "Username or password incorrect"
+      })
+    }
+  } catch(e) {
+    // 500 database error
+    res.status(500).json({
+      success: false,
+      response: e
+    })
+  }
+});
+
+// Authenticate user
+
+const authenticateUser = async (req, res, next) => {
+  const accessToken = req.header("Authorization");
+  try {
+    const user = await User.findOne({accessToken: accessToken});
+    if (user) {
+      next();
+    } else {
+      res.status(401).json({
+        success: false,
+        response: "Please log in"
+      })
+    } 
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      response: e
+    })
+  }
+};
+
+app.get('/loginmessage', authenticateUser);
+app.get('/loginmessage', (req, res) => {
+  res.json({secret: 'Login works'})
+});
+
 
 // Start the server
 app.listen(port, () => {
