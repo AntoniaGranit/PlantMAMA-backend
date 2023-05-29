@@ -29,24 +29,29 @@ const { Schema } = mongoose;
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
-    required: true,
+    required: [true, "Username is required!"],
     unique: true
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "Email is required!"],
     unique: true,
+    validate(value) {
+      if(!validator.isEmail(value)) {
+        throw new Error('Invalid email address');
+      }
+    }
   },
-  location: {
-    type: String,
-    required: true
-  },
-  numberOfPlants: {
-    type: Number
-  },
-  colorOfThumb: {
-    type: String
-  },
+  // location: {
+  //   type: String,
+  //   required: true
+  // },
+  // numberOfPlants: {
+  //   type: Number
+  // },
+  // colorOfThumb: {
+  //   type: String
+  // },
   password: {
     type: String,
     required: true,
@@ -56,7 +61,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: () => crypto.randomBytes(128).toString("hex")
   }
-})
+});
 
 const User = mongoose.model("User", UserSchema);
 
@@ -97,6 +102,36 @@ const Plant = mongoose.model("Plant", PlantSchema);
 app.get("/", (req, res) => {
   res.send(listEndpoints(app));
 });
+
+
+// Register user endpoint
+app.post("/register", async (req, res) => {
+  const { username, email, password } = req.body;
+  try {
+    const salt = bcrypt.genSaltSync();
+    const newUser = await new User({
+      username: username,
+      email: email,
+      password: bcrypt.hashSync(password, salt)
+    }).save()
+    // 201 status code - successful creation of user
+    res.status(201).json({
+      success: true,
+      response: {
+        username: newUser.username,
+        email: newUser.email,
+        id: newUser._id,
+        accessToken: newUser.accessToken
+      }
+    })
+  } catch (e) {
+    res.status(400).json({
+      success: false,
+      response: e
+    })
+  }
+})
+
 
 // Start the server
 app.listen(port, () => {
