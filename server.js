@@ -70,7 +70,7 @@ const PlantSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  plantPhoto: {
+  imageUrl: {
     // not sure what to put here
     type: String
   },
