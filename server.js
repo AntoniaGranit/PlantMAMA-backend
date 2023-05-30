@@ -157,7 +157,39 @@ app.post("/addplant", async (req, res) => {
 }
 });
 
-// Get user's plants
+// Delete plant
+app.delete('/plant/:plantId', authenticateUser);
+app.delete('/plant/:plantId', async (req, res) => {
+  try {
+    const accessToken = req.header('Authorization');
+    const user = await User.findOne({ accessToken: accessToken });
+    const plantId = req.params.plantId;
+
+    // Check if the plant belongs to the user
+    const plant = await Plant.findOne({ _id: plantId, user: user._id });
+    if (plant) {
+      // Delete the plant
+      await Plant.deleteOne({ _id: plantId });
+      res.status(200).json({
+        success: true,
+        message: 'Plant deleted successfully',
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        response: 'Plant not found',
+      });
+    }
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      response: e,
+    });
+  }
+});
+
+
+// Get user's garden
 app.get("/:username/garden", authenticateUser);
 app.get("/:username/garden", async (req, res) => {
   const accessToken = req.header("Authorization");
@@ -169,7 +201,8 @@ app.get("/:username/garden", async (req, res) => {
     response: plants})
 });
 
-// Register user endpoint
+
+// Register user
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   try {
@@ -197,7 +230,8 @@ app.post("/register", async (req, res) => {
   }
 })
 
-// Log in endpoint
+
+// Log in
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -227,7 +261,7 @@ app.post("/login", async (req, res) => {
 });
 
 
-// User profile endpoint
+// User profile
 app.get("/:username", authenticateUser);
 app.get('/:username', async (req, res) => {
   try {
@@ -253,6 +287,35 @@ app.get('/:username', async (req, res) => {
       success: false,
         response: e
     })
+  }
+});
+
+
+// Delete user
+app.delete('/:username/delete', authenticateUser);
+app.delete('/:username/delete', async (req, res) => {
+  try {
+    const accessToken = req.header("Authorization");
+    const user = await User.findOne({ accessToken: accessToken });
+    const username = req.params.username;
+    if (user.username === username) {
+      await User.findOneAndDelete({ username: username });
+      await Plant.deleteMany({ user: user._id });
+      res.status(200).json({
+        success: true,
+        message: "Profile and associated plants successfully deleted"
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        response: "You are not authorized to delete this profile"
+      });
+    }
+  } catch(e) {
+    res.status(500).json({
+      success: false,
+      response: e
+    });
   }
 });
 
