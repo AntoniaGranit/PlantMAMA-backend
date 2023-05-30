@@ -91,6 +91,10 @@ const PlantSchema = new mongoose.Schema({
   lastSoilChange: {
     type: Date,
     default: () => new Date()
+  },
+  user: {
+    type: String,
+    require: true
   }
 })
 
@@ -162,8 +166,34 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Authenticate user
 
+// User profile endpoint
+app.get('/users/:username', async (req, res) => {
+  try {
+    const username = req.params.username;
+    const singleUser = await User.findOne({username: username});
+    if (singleUser) {
+      res.status(200).json({
+        message: 'User profile',
+        success: true,
+        body: singleUser
+      })
+    } else {
+      res.status(404).json({
+        success: false,
+        response: 'No user by that name found'
+      })
+    }
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+        response: e
+    })
+  }
+});
+
+
+// Authenticate user
 const authenticateUser = async (req, res, next) => {
   const accessToken = req.header("Authorization");
   try {
@@ -184,10 +214,45 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
-app.get('/loginmessage', authenticateUser);
-app.get('/loginmessage', (req, res) => {
-  res.json({secret: 'Login works'})
+
+// Add plant to garden
+app.post("/addplant", authenticateUser);
+app.post("/addplant", async (req, res) => {
+  try {
+  const { plantname, species } = req.body;
+  const accessToken = req.header("Authorization");
+  const user = await User.findOne({accessToken: accessToken});
+  const plants = await new Plant({
+    plantname: plantname,
+    species: species,
+    user: user._id
+  }).save()
+  res.status(200).json({
+    success: true,
+    response: {
+      plants: plants
+    }
+})
+} catch (e) {
+  res.status(500).json({
+    success: false,
+    response: e
+  })
+}
 });
+
+// Get user's plants
+app.get("/plants", authenticateUser);
+app.get("/plants", async (req, res) => {
+  const accessToken = req.header("Authorization");
+  const user = await User.findOne({accessToken: accessToken});
+  const plants = await Plant.find({user: user._id});
+  res.status(200).json({
+    // missing error catching 
+    success: true, 
+    response: plants})
+});
+
 
 
 // Start the server
