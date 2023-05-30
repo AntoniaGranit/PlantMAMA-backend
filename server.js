@@ -303,7 +303,7 @@ app.delete('/:username/delete', async (req, res) => {
       await Plant.deleteMany({ user: user._id });
       res.status(200).json({
         success: true,
-        message: "Profile and associated successfully deleted"
+        message: "Profile and associated plants successfully deleted"
       });
     } else {
       res.status(401).json({
