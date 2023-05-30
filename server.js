@@ -109,6 +109,66 @@ app.get("/", (req, res) => {
 });
 
 
+// Authenticate user
+const authenticateUser = async (req, res, next) => {
+  const accessToken = req.header("Authorization");
+  try {
+    const user = await User.findOne({accessToken: accessToken});
+    if (user) {
+      next();
+    } else {
+      res.status(401).json({
+        success: false,
+        response: "Please log in"
+      })
+    } 
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      response: e
+    })
+  }
+};
+
+
+// Add plant to garden
+app.post("/addplant", authenticateUser);
+app.post("/addplant", async (req, res) => {
+  try {
+  const { plantname, species } = req.body;
+  const accessToken = req.header("Authorization");
+  const user = await User.findOne({accessToken: accessToken});
+  const plants = await new Plant({
+    plantname: plantname,
+    species: species,
+    user: user._id
+  }).save()
+  res.status(200).json({
+    success: true,
+    response: {
+      plants: plants
+    }
+})
+} catch (e) {
+  res.status(500).json({
+    success: false,
+    response: e
+  })
+}
+});
+
+// Get user's plants
+app.get("/garden", authenticateUser);
+app.get("/garden", async (req, res) => {
+  const accessToken = req.header("Authorization");
+  const user = await User.findOne({accessToken: accessToken});
+  const plants = await Plant.find({user: user._id});
+  res.status(200).json({
+    // missing error catching 
+    success: true, 
+    response: plants})
+});
+
 // Register user endpoint
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
@@ -168,14 +228,18 @@ app.post("/login", async (req, res) => {
 
 
 // User profile endpoint
-app.get('/users/:username', async (req, res) => {
+app.get("/:username", authenticateUser);
+app.get('/:username', async (req, res) => {
   try {
+    const accessToken = req.header("Authorization");
+    const user = await User.findOne({accessToken: accessToken});
     const username = req.params.username;
     const singleUser = await User.findOne({username: username});
     if (singleUser) {
       res.status(200).json({
         message: 'User profile',
         success: true,
+        user: user._id,
         body: singleUser
       })
     } else {
@@ -191,68 +255,6 @@ app.get('/users/:username', async (req, res) => {
     })
   }
 });
-
-
-// Authenticate user
-const authenticateUser = async (req, res, next) => {
-  const accessToken = req.header("Authorization");
-  try {
-    const user = await User.findOne({accessToken: accessToken});
-    if (user) {
-      next();
-    } else {
-      res.status(401).json({
-        success: false,
-        response: "Please log in"
-      })
-    } 
-  } catch (e) {
-    res.status(500).json({
-      success: false,
-      response: e
-    })
-  }
-};
-
-
-// Add plant to garden
-app.post("/addplant", authenticateUser);
-app.post("/addplant", async (req, res) => {
-  try {
-  const { plantname, species } = req.body;
-  const accessToken = req.header("Authorization");
-  const user = await User.findOne({accessToken: accessToken});
-  const plants = await new Plant({
-    plantname: plantname,
-    species: species,
-    user: user._id
-  }).save()
-  res.status(200).json({
-    success: true,
-    response: {
-      plants: plants
-    }
-})
-} catch (e) {
-  res.status(500).json({
-    success: false,
-    response: e
-  })
-}
-});
-
-// Get user's plants
-app.get("/plants", authenticateUser);
-app.get("/plants", async (req, res) => {
-  const accessToken = req.header("Authorization");
-  const user = await User.findOne({accessToken: accessToken});
-  const plants = await Plant.find({user: user._id});
-  res.status(200).json({
-    // missing error catching 
-    success: true, 
-    response: plants})
-});
-
 
 
 // Start the server
