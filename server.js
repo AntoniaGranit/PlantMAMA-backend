@@ -157,6 +157,7 @@ app.post("/addplant", async (req, res) => {
 }
 });
 
+
 // Get user's plants
 app.get("/:username/garden", authenticateUser);
 app.get("/:username/garden", async (req, res) => {
@@ -168,6 +169,7 @@ app.get("/:username/garden", async (req, res) => {
     success: true, 
     response: plants})
 });
+
 
 // Register user endpoint
 app.post("/register", async (req, res) => {
@@ -196,6 +198,7 @@ app.post("/register", async (req, res) => {
     })
   }
 })
+
 
 // Log in endpoint
 app.post("/login", async (req, res) => {
@@ -253,6 +256,35 @@ app.get('/:username', async (req, res) => {
       success: false,
         response: e
     })
+  }
+});
+
+
+// Delete user
+app.delete('/:username/delete', authenticateUser);
+app.delete('/:username/delete', async (req, res) => {
+  try {
+    const accessToken = req.header("Authorization");
+    const user = await User.findOne({ accessToken: accessToken });
+    const username = req.params.username;
+    if (user.username === username) {
+      await User.findOneAndDelete({ username: username });
+      await Plant.deleteMany({ user: user._id });
+      res.status(200).json({
+        success: true,
+        message: "Profile and associated successfully deleted"
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        response: "You are not authorized to delete this profile"
+      });
+    }
+  } catch(e) {
+    res.status(500).json({
+      success: false,
+      response: e
+    });
   }
 });
 
