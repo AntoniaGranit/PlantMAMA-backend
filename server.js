@@ -92,9 +92,9 @@ const PlantSchema = new mongoose.Schema({
     type: Date,
     default: () => new Date()
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+  user: {
+    type: String,
+    require: true
   }
 })
 
@@ -168,7 +168,7 @@ app.post("/login", async (req, res) => {
 
 
 // User profile endpoint
-app.get('/:username', async (req, res) => {
+app.get('/users/:username', async (req, res) => {
   try {
     const username = req.params.username;
     const singleUser = await User.findOne({username: username});
@@ -214,10 +214,12 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
+
+// Add plant to garden
 app.post("/addplant", authenticateUser);
 app.post("/addplant", async (req, res) => {
   try {
-  const {plantname, species } = req.body;
+  const { plantname, species } = req.body;
   const accessToken = req.header("Authorization");
   const user = await User.findOne({accessToken: accessToken});
   const plants = await new Plant({
@@ -237,6 +239,18 @@ app.post("/addplant", async (req, res) => {
     response: e
   })
 }
+});
+
+// Get user's plants
+app.get("/plants", authenticateUser);
+app.get("/plants", async (req, res) => {
+  const accessToken = req.header("Authorization");
+  const user = await User.findOne({accessToken: accessToken});
+  const plants = await Plant.find({user: user._id});
+  res.status(200).json({
+    // missing error catching 
+    success: true, 
+    response: plants})
 });
 
 
