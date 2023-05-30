@@ -24,9 +24,9 @@ app.use(express.json());
 
 //////////////////// SCHEMAS ////////////////////
 
-// User schema
 const { Schema } = mongoose;
 
+// User schema
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -158,8 +158,8 @@ app.post("/addplant", async (req, res) => {
 });
 
 // Get user's plants
-app.get("/garden", authenticateUser);
-app.get("/garden", async (req, res) => {
+app.get("/:username/garden", authenticateUser);
+app.get("/:username/garden", async (req, res) => {
   const accessToken = req.header("Authorization");
   const user = await User.findOne({accessToken: accessToken});
   const plants = await Plant.find({user: user._id});
