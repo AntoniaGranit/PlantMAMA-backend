@@ -203,7 +203,7 @@ app.delete('/plant/:plantId', async (req, res) => {
       await Plant.deleteOne({ _id: plantId });
       res.status(200).json({
         success: true,
-        message: 'Plant deleted successfully',
+        response: 'Plant deleted successfully',
       });
     } else {
       res.status(404).json({
