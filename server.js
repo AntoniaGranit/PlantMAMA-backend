@@ -43,10 +43,10 @@ const UserSchema = new mongoose.Schema({
       }
     }
   },
-  // location: {
-  //   type: String,
-  //   required: true
-  // },
+  location: {
+    type: String,
+    required: true
+  },
   // numberOfPlants: {
   //   type: Number
   // },
@@ -318,6 +318,46 @@ app.get('/:username', async (req, res) => {
       success: false,
         response: e
     })
+  }
+});
+
+
+// Edit user profile
+app.put("/:username/edit", authenticateUser);
+app.put("/:username/edit", async (req, res) => {
+  try {
+    const accessToken = req.header("Authorization");
+    const user = await User.findOne({ accessToken: accessToken });
+    const username = req.params.username;
+    if (user.username === username) {
+      const { username, location, email, password } = req.body;
+      if (username) {
+        user.username = username; // Change username
+      }
+      if (location) {
+        user.location = location; // Change location
+      }
+      if (email) {
+        user.email = email; // Change email
+      }
+      await user.save(); // Save the updated user profile
+      res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully',
+        user: user._id,
+        body: user
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        response: 'You are not authorized to edit this profile'
+      });
+    }
+  } catch(e) {
+    res.status(500).json({
+      success: false,
+      response: e
+    });
   }
 });
 
