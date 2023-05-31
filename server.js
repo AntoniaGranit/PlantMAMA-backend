@@ -157,6 +157,37 @@ app.post("/addplant", async (req, res) => {
 }
 });
 
+
+// Plant profile
+app.get("/:username/:plantId", authenticateUser);
+app.get('/:username/:plantId', async (req, res) => {
+  try {
+    const accessToken = req.header("Authorization");
+    const user = await User.findOne({accessToken: accessToken});
+    const plantId = req.params.plantId;
+    // find plant by ID and make sure it belongs to the user
+    const plant = await Plant.findOne({ _id: plantId, user: user._id });
+    if (plant) {
+      res.status(200).json({
+        message: 'Plant profile',
+        success: true,
+        response: plant
+      })
+    } else {
+      res.status(404).json({
+        success: false,
+        response: 'Plant not found'
+      })
+    }
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+        response: e
+    })
+  }
+});
+
+
 // Delete plant
 app.delete('/plant/:plantId', authenticateUser);
 app.delete('/plant/:plantId', async (req, res) => {
