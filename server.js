@@ -221,8 +221,8 @@ app.delete('/plant/:plantId', async (req, res) => {
 
 
 // Get user's garden
-app.get("/:username/garden", authenticateUser);
-app.get("/:username/garden", async (req, res) => {
+app.get("/users/:username/garden", authenticateUser);
+app.get("/users/:username/garden", async (req, res) => {
   try {
   const accessToken = req.header("Authorization");
   const user = await User.findOne({accessToken: accessToken});
@@ -345,15 +345,20 @@ app.put("/:username/edit", async (req, res) => {
     const user = await User.findOne({ accessToken: accessToken });
     const username = req.params.username;
     if (user.username === username) {
-      const { username, location, email, password } = req.body;
+      const { username, email, password } = req.body;
       if (username) {
         user.username = username; // Change username
       }
-      if (location) {
-        user.location = location; // Change location
-      }
+      // if (location) {
+      //   user.location = location; // Change location
+      // }
       if (email) {
         user.email = email; // Change email
+      }
+      if (password) {
+        const salt = bcrypt.genSaltSync();
+        const hashedPassword = bcrypt.hashSync(password, salt);
+        user.password = hashedPassword; // Change password
       }
       await user.save(); // Save the updated user profile
       res.status(200).json({
