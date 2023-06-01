@@ -9,15 +9,13 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.Promise = Promise;
 mongoose.set('debug', true);
 
-// Defines the port the app will run on. Defaults to 8080, but can be overridden
-// when starting the server. Example command to overwrite PORT env variable value:
-// PORT=9000 npm start
+// Variables and dependencies
 const port = process.env.PORT || 8080;
 const app = express();
 const listEndpoints = require('express-list-endpoints');
 const validator = require('validator');
 
-// Add middlewares to enable cors and json body parsing
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
@@ -188,9 +186,56 @@ app.get('/:username/:plantId', async (req, res) => {
 });
 
 
+// Edit plant profile
+app.patch('/:username/:plantId/edit', authenticateUser);
+app.patch('/:username/:plantId/edit', async (req, res) => {
+  try {
+    const accessToken = req.header('Authorization');
+    const user = await User.findOne({ accessToken: accessToken });
+    const plantId = req.params.plantId;
+    const { plantname, species, imageUrl, birthday } = req.body;
+    // Find the plant by ID and make sure it belongs to the user
+    const plant = await Plant.findOne({ _id: plantId, user: user._id });
+
+    if (plant) {
+      if (plantname) {
+        plant.plantname = plantname; // Change plantname
+      }
+      if (species) {
+        plant.species = species; // Change species
+      }
+      if (imageUrl) {
+        plant.imageUrl = imageUrl; // Change plant photo
+      }
+      if (birthday) {
+        plant.birthday = birthday; // Change birthday
+      }
+
+      await plant.save(); // Save the updated plant
+      res.status(200).json({
+        success: true,
+        message: 'Plant updated successfully',
+        response: plant,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        response: 'Plant not found',
+      });
+    }
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      response: e,
+    });
+  }
+});
+
+
+
 // Delete plant
-app.delete('/plant/:plantId', authenticateUser);
-app.delete('/plant/:plantId', async (req, res) => {
+app.delete('/:username/:plantId/delete', authenticateUser);
+app.delete('/:username/:plantId/delete', async (req, res) => {
   try {
     const accessToken = req.header('Authorization');
     const user = await User.findOne({ accessToken: accessToken });
@@ -221,15 +266,30 @@ app.delete('/plant/:plantId', async (req, res) => {
 
 
 // Get user's garden
-app.get("/:username/garden", authenticateUser);
-app.get("/:username/garden", async (req, res) => {
+app.get("/users/:username/garden", authenticateUser);
+app.get("/users/:username/garden", async (req, res) => {
+  try {
   const accessToken = req.header("Authorization");
   const user = await User.findOne({accessToken: accessToken});
   const plants = await Plant.find({user: user._id});
+  if (plants) {
   res.status(200).json({
     // missing error catching 
     success: true, 
-    response: plants})
+    response: plants
+  })
+  } else {
+    res.status(404).json({
+      success: false,
+      response: 'Garden not found'
+    })
+  }  
+} catch (e) {
+    res.status(500).json({
+      success: false,
+        response: e
+    })
+  }
 });
 
 
@@ -318,6 +378,51 @@ app.get('/:username', async (req, res) => {
       success: false,
         response: e
     })
+  }
+});
+
+
+// Edit user profile
+app.patch("/:username/edit", authenticateUser);
+app.patch("/:username/edit", async (req, res) => {
+  try {
+    const accessToken = req.header("Authorization");
+    const user = await User.findOne({ accessToken: accessToken });
+    const username = req.params.username;
+    if (user.username === username) {
+      const { username, email, password } = req.body;
+      if (username) {
+        user.username = username; // Change username
+      }
+      // if (location) {
+      //   user.location = location; // Change location
+      // }
+      if (email) {
+        user.email = email; // Change email
+      }
+      if (password) {
+        const salt = bcrypt.genSaltSync();
+        const hashedPassword = bcrypt.hashSync(password, salt);
+        user.password = hashedPassword; // Change password
+      }
+      await user.save(); // Save the updated user profile
+      res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully',
+        user: user._id,
+        body: user
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        response: 'You are not authorized to edit this profile'
+      });
+    }
+  } catch(e) {
+    res.status(500).json({
+      success: false,
+      response: e
+    });
   }
 });
 
