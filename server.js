@@ -187,8 +187,8 @@ app.get('/:username/:plantId', async (req, res) => {
 
 
 // Edit plant profile
-app.patch('/:username/:plantId/edit', authenticateUser);
-app.patch('/:username/:plantId/edit', async (req, res) => {
+app.patch('/:username/:plantId', authenticateUser);
+app.patch('/:username/:plantId', async (req, res) => {
   try {
     const accessToken = req.header('Authorization');
     const user = await User.findOne({ accessToken: accessToken });
@@ -234,8 +234,8 @@ app.patch('/:username/:plantId/edit', async (req, res) => {
 
 
 // Delete plant
-app.delete('/:username/:plantId/delete', authenticateUser);
-app.delete('/:username/:plantId/delete', async (req, res) => {
+app.delete('/:username/:plantId', authenticateUser);
+app.delete('/:username/:plantId', async (req, res) => {
   try {
     const accessToken = req.header('Authorization');
     const user = await User.findOne({ accessToken: accessToken });
@@ -383,8 +383,8 @@ app.get('/:username', async (req, res) => {
 
 
 // Edit user profile
-app.patch("/:username/edit", authenticateUser);
-app.patch("/:username/edit", async (req, res) => {
+app.patch("/:username", authenticateUser);
+app.patch("/:username", async (req, res) => {
   try {
     const accessToken = req.header("Authorization");
     const user = await User.findOne({ accessToken: accessToken });
@@ -428,8 +428,8 @@ app.patch("/:username/edit", async (req, res) => {
 
 
 // Delete user
-app.delete('/:username/delete', authenticateUser);
-app.delete('/:username/delete', async (req, res) => {
+app.delete('/:username', authenticateUser);
+app.delete('/:username', async (req, res) => {
   try {
     const accessToken = req.header("Authorization");
     const user = await User.findOne({ accessToken: accessToken });
