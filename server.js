@@ -157,14 +157,14 @@ app.post("/addplant", async (req, res) => {
 
 
 // Plant profile
-app.get("/:username/:plantId", authenticateUser);
-app.get('/:username/:plantId', async (req, res) => {
+app.get("/:username/garden/:plantname", authenticateUser);
+app.get('/:username/garden/:plantname', async (req, res) => {
   try {
     const accessToken = req.header("Authorization");
     const user = await User.findOne({accessToken: accessToken});
-    const plantId = req.params.plantId;
-    // find plant by ID and make sure it belongs to the user
-    const plant = await Plant.findOne({ _id: plantId, user: user._id });
+    const plantname = req.params.plantname;
+    // find plant by its name and make sure it belongs to the user
+    const plant = await Plant.findOne({ plantname: plantname, user: user._id });
     if (plant) {
       res.status(200).json({
         message: 'Plant profile',
@@ -187,15 +187,14 @@ app.get('/:username/:plantId', async (req, res) => {
 
 
 // Edit plant profile
-app.patch('/:username/:plantId', authenticateUser);
-app.patch('/:username/:plantId', async (req, res) => {
+app.patch('/:username/garden/:plantname', authenticateUser);
+app.patch('/:username/garden/:plantname', async (req, res) => {
   try {
     const accessToken = req.header('Authorization');
     const user = await User.findOne({ accessToken: accessToken });
-    const plantId = req.params.plantId;
     const { plantname, species, imageUrl, birthday } = req.body;
     // Find the plant by ID and make sure it belongs to the user
-    const plant = await Plant.findOne({ _id: plantId, user: user._id });
+    const plant = await Plant.findOne({ plantname: plantname, user: user._id });
 
     if (plant) {
       if (plantname) {
@@ -234,15 +233,14 @@ app.patch('/:username/:plantId', async (req, res) => {
 
 
 // Delete plant
-app.delete('/:username/:plantId', authenticateUser);
-app.delete('/:username/:plantId', async (req, res) => {
+app.delete('/:username/garden/:plantname', authenticateUser);
+app.delete('/:username/garden/:plantname', async (req, res) => {
   try {
     const accessToken = req.header('Authorization');
     const user = await User.findOne({ accessToken: accessToken });
-    const plantId = req.params.plantId;
-
-    // Check if the plant belongs to the user
-    const plant = await Plant.findOne({ _id: plantId, user: user._id });
+    const plantname = req.params.plantname;
+    // find plant by plantname and make sure it belongs to the user
+    const plant = await Plant.findOne({ plantname: plantname, user: user._id });
     if (plant) {
       // Delete the plant
       await Plant.deleteOne({ _id: plantId });
