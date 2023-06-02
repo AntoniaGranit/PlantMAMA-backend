@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Import schemas
 const User = require('../../schemas/user');
+const Plant = require('../../schemas/plant');
 
 // Authenticate user
 const authenticateUser = async (req, res, next) => {

@@ -26,8 +26,8 @@ const authenticateUser = async (req, res, next) => {
     }
   };
 
-router.get("/users/:username/garden", authenticateUser);
-router.get("/users/:username/garden", async (req, res) => {
+router.get("/:username/garden", authenticateUser);
+router.get("/:username/garden", async (req, res) => {
   try {
   const accessToken = req.header("Authorization");
   const user = await User.findOne({accessToken: accessToken});
