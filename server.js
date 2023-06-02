@@ -25,10 +25,16 @@ const Plant = require('./schemas/plant');
 // Import routes
 const addPlant = require('./routes/plant/addplant');
 const plantProfile = require('./routes/plant/plantprofile');
+const editPlant = require('./routes/plant/editplant');
+const deletePlant = require('./routes/plant/deleteplant');
+const garden = require('./routes/plant/garden');
 
 // Use routes
 app.use('/addplant', addPlant);
 app.use('/', plantProfile);
+app.use('/', editPlant);
+app.use('/', deletePlant);
+app.use('/', garden);
 
 
 //////////////////// ENDPOINTS ////////////////////
@@ -59,140 +65,6 @@ const authenticateUser = async (req, res, next) => {
     })
   }
 };
-
-  // Plant profile
-  // app.get("/:username/garden/:plantId", authenticateUser);
-  // app.get("/:username/garden/:plantId", async (req, res) => {
-  //   try {
-  //     const accessToken = req.header("Authorization");
-  //     const user = await User.findOne({accessToken: accessToken});
-  //     const plantId = req.params.plantId;
-  //     // find plant by its name and make sure it belongs to the user
-  //     const plant = await Plant.findOne({ _id: plantId, user: user._id });
-  //     if (plant) {
-  //       res.status(200).json({
-  //         message: 'Plant profile',
-  //         success: true,
-  //         response: plant
-  //       })
-  //     } else {
-  //       res.status(404).json({
-  //         success: false,
-  //         response: 'Plant not found'
-  //       })
-  //     }
-  //   } catch (e) {
-  //     res.status(500).json({
-  //       success: false,
-  //         response: e
-  //     })
-  //   }
-  // });
-
-// Edit plant profile
-app.patch('/:username/garden/:plantId', authenticateUser);
-app.patch('/:username/garden/:plantId', async (req, res) => {
-  try {
-    const accessToken = req.header('Authorization');
-    const user = await User.findOne({ accessToken: accessToken });
-    const { plantname, species, imageUrl, birthday } = req.body;
-    const plantId = req.params.plantId;
-    // Find the plant by ID and make sure it belongs to the user
-    const plant = await Plant.findOne({ _id: plantId, user: user._id });
-
-    if (plant) {
-      if (plantname) {
-        plant.plantname = plantname; // Change plantname
-      }
-      if (species) {
-        plant.species = species; // Change species
-      }
-      if (imageUrl) {
-        plant.imageUrl = imageUrl; // Change plant photo
-      }
-      if (birthday) {
-        plant.birthday = birthday; // Change birthday
-      }
-
-      await plant.save(); // Save the updated plant
-      res.status(200).json({
-        success: true,
-        message: 'Plant updated successfully',
-        response: plant,
-      });
-    } else {
-      res.status(404).json({
-        success: false,
-        response: 'Plant not found',
-      });
-    }
-  } catch (e) {
-    res.status(500).json({
-      success: false,
-      response: e,
-    });
-  }
-});
-
-
-
-// Delete plant
-app.delete('/:username/garden/:plantId', authenticateUser);
-app.delete('/:username/garden/:plantId', async (req, res) => {
-  try {
-    const accessToken = req.header('Authorization');
-    const user = await User.findOne({ accessToken: accessToken });
-    const plantId = req.params.plantId;
-    // find plant by plantname and make sure it belongs to the user
-    const plant = await Plant.findOne({ _id: plantId, user: user._id });
-    if (plant) {
-      // Delete the plant
-      await Plant.deleteOne({ _id: plantId });
-      res.status(200).json({
-        success: true,
-        response: 'Plant deleted successfully',
-      });
-    } else {
-      res.status(404).json({
-        success: false,
-        response: 'Plant not found',
-      });
-    }
-  } catch (e) {
-    res.status(500).json({
-      success: false,
-      response: e,
-    });
-  }
-});
-
-
-// Get user's garden
-app.get("/users/:username/garden", authenticateUser);
-app.get("/users/:username/garden", async (req, res) => {
-  try {
-  const accessToken = req.header("Authorization");
-  const user = await User.findOne({accessToken: accessToken});
-  const plants = await Plant.find({user: user._id});
-  if (plants) {
-  res.status(200).json({
-    // missing error catching 
-    success: true, 
-    response: plants
-  })
-  } else {
-    res.status(404).json({
-      success: false,
-      response: 'Garden not found'
-    })
-  }  
-} catch (e) {
-    res.status(500).json({
-      success: false,
-        response: e
-    })
-  }
-});
 
 
 // Register user
