@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Import schemas
 const User = require('../../schemas/user');
+const Plant = require('../../schemas/plant');
 
 // Authenticate user
 const authenticateUser = async (req, res, next) => {
@@ -25,25 +26,25 @@ const authenticateUser = async (req, res, next) => {
     }
   };
 
-// User profile
-router.get("/:username", authenticateUser);
-router.get('/:username', async (req, res) => {
+// Plant profile
+router.get("/:username/garden/:plantId", authenticateUser);
+router.get("/:username/garden/:plantId", async (req, res) => {
   try {
     const accessToken = req.header("Authorization");
     const user = await User.findOne({accessToken: accessToken});
-    const username = req.params.username;
-    const singleUser = await User.findOne({username: username});
-    if (singleUser) {
+    const plantId = req.params.plantId;
+    // find plant by its name and make sure it belongs to the user
+    const plant = await Plant.findOne({ _id: plantId, user: user._id });
+    if (plant) {
       res.status(200).json({
-        message: 'User profile',
+        message: "Plant profile",
         success: true,
-        user: user._id,
-        body: singleUser
+        response: plant
       })
     } else {
       res.status(404).json({
         success: false,
-        response: 'No user by that name found'
+        response: "Planty not found"
       })
     }
   } catch (e) {
@@ -54,4 +55,4 @@ router.get('/:username', async (req, res) => {
   }
 });
 
-  module.exports = router;
+module.exports = router;
