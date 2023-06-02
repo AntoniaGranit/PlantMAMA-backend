@@ -34,7 +34,7 @@ router.get("/:username/garden/:plantId", async (req, res) => {
     const user = await User.findOne({accessToken: accessToken});
     const plantId = req.params.plantId;
     // find plant by its name and make sure it belongs to the user
-    const plant = await Plant.findOne({ _id: plantId, user: user._id });
+    const plant = await Plant.findOne({ _id: plantId, user: user._id })
     if (plant) {
       res.status(200).json({
         message: "Plant profile",
@@ -44,7 +44,7 @@ router.get("/:username/garden/:plantId", async (req, res) => {
     } else {
       res.status(404).json({
         success: false,
-        response: "Planty not found"
+        response: "Plant not found"
       })
     }
   } catch (e) {
