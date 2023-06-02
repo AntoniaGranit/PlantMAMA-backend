@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import crypto from "crypto";
 import bcrypt from "bcrypt";
 
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-plantmama";
@@ -13,90 +12,16 @@ mongoose.set('debug', true);
 const port = process.env.PORT || 8080;
 const app = express();
 const listEndpoints = require('express-list-endpoints');
-const validator = require('validator');
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 
 
-//////////////////// SCHEMAS ////////////////////
+// Import schemas
+const User = require('./schemas/user');
+const Plant = require('./schemas/plant');
 
-const { Schema } = mongoose;
-
-// User schema
-const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, "Username is required!"],
-    unique: true
-  },
-  email: {
-    type: String,
-    required: [true, "Email is required!"],
-    unique: true,
-    validate(value) {
-      if(!validator.isEmail(value)) {
-        throw new Error('Invalid email address');
-      }
-    }
-  },
-  // location: {
-  //   type: String,
-  //   required: true
-  // },
-  // numberOfPlants: {
-  //   type: Number
-  // },
-  // colorOfThumb: {
-  //   type: String
-  // },
-  password: {
-    type: String,
-    required: true,
-    minLength: 6
-  },
-  accessToken: {
-    type: String,
-    default: () => crypto.randomBytes(128).toString("hex")
-  }
-});
-
-const User = mongoose.model("User", UserSchema);
-
-// Plant schema
-const PlantSchema = new mongoose.Schema({
-  plantname: {
-    type: String,
-    required: true
-  },
-  species: {
-    type: String,
-    required: true
-  },
-  imageUrl: {
-    // not sure what to put here
-    type: String
-  },
-  birthday: {
-    type: Date,
-    default: () => new Date()
-  },
-  lastWatered: {
-    type: Date,
-    default: () => new Date()
-  },
-  lastSoilChange: {
-    type: Date,
-    default: () => new Date()
-  },
-  user: {
-    type: String,
-    require: true
-  }
-})
-
-const Plant = mongoose.model("Plant", PlantSchema);
 
 
 //////////////////// ENDPOINTS ////////////////////
