@@ -22,6 +22,13 @@ app.use(express.json());
 const User = require('./schemas/user');
 const Plant = require('./schemas/plant');
 
+// Import routes
+const addPlant = require('./routes/plant/addplant');
+const plantProfile = require('./routes/plant/plantprofile');
+
+// Use routes
+app.use('/addplant', addPlant);
+app.use('/', plantProfile);
 
 
 //////////////////// ENDPOINTS ////////////////////
@@ -53,63 +60,34 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
-
-// Add plant to garden
-app.post("/addplant", authenticateUser);
-app.post("/addplant", async (req, res) => {
-  try {
-  const { plantname, species } = req.body;
-  const accessToken = req.header("Authorization");
-  const user = await User.findOne({accessToken: accessToken});
-  const plants = await new Plant({
-    plantname: plantname,
-    species: species,
-    user: user._id
-  }).save()
-  res.status(200).json({
-    success: true,
-    response: {
-      plants: plants
-    }
-})
-} catch (e) {
-  res.status(500).json({
-    success: false,
-    response: e
-  })
-}
-});
-
-
-// Plant profile
-app.get("/:username/garden/:plantId", authenticateUser);
-app.get('/:username/garden/:plantId', async (req, res) => {
-  try {
-    const accessToken = req.header("Authorization");
-    const user = await User.findOne({accessToken: accessToken});
-    const plantId = req.params.plantId;
-    // find plant by its name and make sure it belongs to the user
-    const plant = await Plant.findOne({ _id: plantId, user: user._id });
-    if (plant) {
-      res.status(200).json({
-        message: 'Plant profile',
-        success: true,
-        response: plant
-      })
-    } else {
-      res.status(404).json({
-        success: false,
-        response: 'Plant not found'
-      })
-    }
-  } catch (e) {
-    res.status(500).json({
-      success: false,
-        response: e
-    })
-  }
-});
-
+  // Plant profile
+  // app.get("/:username/garden/:plantId", authenticateUser);
+  // app.get("/:username/garden/:plantId", async (req, res) => {
+  //   try {
+  //     const accessToken = req.header("Authorization");
+  //     const user = await User.findOne({accessToken: accessToken});
+  //     const plantId = req.params.plantId;
+  //     // find plant by its name and make sure it belongs to the user
+  //     const plant = await Plant.findOne({ _id: plantId, user: user._id });
+  //     if (plant) {
+  //       res.status(200).json({
+  //         message: 'Plant profile',
+  //         success: true,
+  //         response: plant
+  //       })
+  //     } else {
+  //       res.status(404).json({
+  //         success: false,
+  //         response: 'Plant not found'
+  //       })
+  //     }
+  //   } catch (e) {
+  //     res.status(500).json({
+  //       success: false,
+  //         response: e
+  //     })
+  //   }
+  // });
 
 // Edit plant profile
 app.patch('/:username/garden/:plantId', authenticateUser);
