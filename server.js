@@ -17,32 +17,32 @@ app.use(cors());
 app.use(express.json());
 
 // Import plant routes
-const addPlant = require('./routes/plant/addplant');
-const plantProfile = require('./routes/plant/plantprofile');
-const editPlant = require('./routes/plant/editplant');
-const deletePlant = require('./routes/plant/deleteplant');
+const addplant = require('./routes/plant/addplant');
+const plantprofile = require('./routes/plant/plantprofile');
+const editplant = require('./routes/plant/editplant');
+const deleteplant = require('./routes/plant/deleteplant');
 const garden = require('./routes/plant/garden');
 
 // Import user routes
 const register = require('./routes/user/register');
 const login = require('./routes/user/login');
-const userProfile = require('./routes/user/userprofile');
-const editProfile = require('./routes/user/editprofile');
-const deleteUser = require('./routes/user/deleteuser');
+const userprofile = require('./routes/user/userprofile');
+const editprofile = require('./routes/user/editprofile');
+const deleteuser = require('./routes/user/deleteuser');
 
 // Use plant routes
-app.use('/addplant', addPlant);
-app.use('/', plantProfile);
-app.use('/', editPlant);
-app.use('/', deletePlant);
+app.use('/addplant', addplant);
+app.use('/', plantprofile);
+app.use('/', editplant);
+app.use('/', deleteplant);
 app.use('/', garden);
 
 // Use user routes
 app.use('/', register);
 app.use('/', login);
-app.use('/', userProfile);
-app.use('/', editProfile);
-app.use('/', deleteUser);
+app.use('/', userprofile);
+app.use('/', editprofile);
+app.use('/', deleteuser);
 
 
 // Index route

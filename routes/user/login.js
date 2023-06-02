@@ -2,9 +2,9 @@ import bcrypt from "bcrypt";
 const express = require('express');
 const router = express.Router();
 
+
 // Import schemas
 const User = require('../../schemas/user');
-
 
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
