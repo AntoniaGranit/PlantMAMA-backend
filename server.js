@@ -31,7 +31,7 @@ const editprofile = require('./routes/user/editprofile');
 const deleteuser = require('./routes/user/deleteuser');
 
 // Use plant routes
-app.use('/addplant', addplant);
+app.use('/', addplant);
 app.use('/', plantprofile);
 app.use('/', editplant);
 app.use('/', deleteplant);

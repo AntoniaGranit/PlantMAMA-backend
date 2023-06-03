@@ -27,8 +27,8 @@ const authenticateUser = async (req, res, next) => {
   };
 
   // Add plant to garden
-router.post("/", authenticateUser);
-router.post("/", async (req, res) => {
+router.post("/addplant", authenticateUser);
+router.post("/addplant", async (req, res) => {
   try {
   const { plantname, species } = req.body;
   const accessToken = req.header("Authorization");
