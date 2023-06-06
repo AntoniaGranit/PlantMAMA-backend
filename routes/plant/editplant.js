@@ -57,7 +57,7 @@ const authenticateUser = async (req, res, next) => {
 router.patch('/:username/garden/:plantId', authenticateUser);
 router.patch('/:username/garden/:plantId', async (req, res) => {
   try {
-    console.log("hejhej skitkorv");
+    console.log("hejhej testing");
     const accessToken = req.header('Authorization');
     const user = await User.findOne({ accessToken: accessToken });
     const { plantname, species, imageUrl, birthday } = req.body;
