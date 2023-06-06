@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
 
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-plantmama";
@@ -18,18 +18,36 @@ const listEndpoints = require('express-list-endpoints');
 dotenv.config();
 
 // // Declaration of variables to use cloudinary instance
-// const cloudinary = require('cloudinary').v2;
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
+
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 
 // Cloudinary configuration
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_API_SECRET
-// });
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET
+});
+
+// Multer configuration
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'plants' // Specify the folder where you want to store the uploaded files in Cloudinary
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Use the multer middleware for handling file uploads
+app.use(upload.single('image'));
+
 
 // Import plant routes
 const addplant = require('./routes/plant/addplant');
