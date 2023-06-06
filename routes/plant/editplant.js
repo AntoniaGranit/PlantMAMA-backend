@@ -5,6 +5,16 @@ const router = express.Router();
 const User = require('../../schemas/user');
 const Plant = require('../../schemas/plant');
 
+// Declaration of variables to use cloudinary instance
+const cloudinary = require('cloudinary').v2;
+
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 // Authenticate user
 const authenticateUser = async (req, res, next) => {
     const accessToken = req.header("Authorization");
@@ -46,6 +56,19 @@ router.patch('/:username/garden/:plantId', async (req, res) => {
       }
       if (imageUrl) {
         plant.imageUrl = imageUrl; // Change plant photo
+        // testing image upload to cloudinary
+        try {
+          const imageUpload = await cloudinary.uploader.upload(imageUrl, {folder: "plant-photos"});
+          res.json({
+            url: imageUpload.secure_url,
+            public_id: imageUpload.public_id,
+          })
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({
+            error: error.message
+          })
+        }
       }
       if (birthday) {
         plant.birthday = birthday; // Change birthday

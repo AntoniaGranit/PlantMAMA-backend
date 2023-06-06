@@ -10,7 +10,6 @@ const PlantSchema = new mongoose.Schema({
       required: true
     },
     imageUrl: {
-      // not sure what to put here
       type: String
     },
     birthday: {

@@ -30,12 +30,13 @@ const authenticateUser = async (req, res, next) => {
 router.post("/addplant", authenticateUser);
 router.post("/addplant", async (req, res) => {
   try {
-  const { plantname, species } = req.body;
+  const { plantname, species, imageUrl } = req.body;
   const accessToken = req.header("Authorization");
   const user = await User.findOne({accessToken: accessToken});
   const plants = await new Plant({
     plantname: plantname,
     species: species,
+    imageUrl: imageUrl,
     user: user._id
   }).save()
   res.status(200).json({
