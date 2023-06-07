@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
 
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-plantmama";
@@ -9,27 +9,16 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.Promise = Promise;
 mongoose.set('debug', true);
 
-
-
 // Variables and dependencies
 const port = process.env.PORT || 8080;
 const app = express();
 const listEndpoints = require('express-list-endpoints');
 dotenv.config();
 
-// // Declaration of variables to use cloudinary instance
-// const cloudinary = require('cloudinary').v2;
-
 // Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Cloudinary configuration
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_API_SECRET
-// });
 
 // Import plant routes
 const addplant = require('./routes/plant/addplant');

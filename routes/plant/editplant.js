@@ -1,3 +1,5 @@
+import multer from 'multer'
+import { CloudinaryStorage } from 'multer-storage-cloudinary'
 const express = require('express');
 const router = express.Router();
 
@@ -14,6 +16,15 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'plants'
+  },
+});
+
+const upload = multer({ storage });
 
 // Authenticate user
 const authenticateUser = async (req, res, next) => {
@@ -38,11 +49,11 @@ const authenticateUser = async (req, res, next) => {
 
 // Edit plant profile
 router.patch('/:username/garden/:plantId', authenticateUser);
-router.patch('/:username/garden/:plantId', async (req, res) => {
+router.patch('/:username/garden/:plantId', upload.single('image'), async (req, res) => {
   try {
     const accessToken = req.header('Authorization');
     const user = await User.findOne({ accessToken: accessToken });
-    const { plantname, species, imageUrl, birthday } = req.body;
+    const { plantname, species, birthday } = req.body;
     const plantId = req.params.plantId;
     // Find the plant by ID and make sure it belongs to the user
     const plant = await Plant.findOne({ _id: plantId, user: user._id });
@@ -54,21 +65,8 @@ router.patch('/:username/garden/:plantId', async (req, res) => {
       if (species) {
         plant.species = species; // Change species
       }
-      if (imageUrl) {
-        plant.imageUrl = imageUrl; // Change plant photo
-        // testing image upload to cloudinary
-        try {
-          const imageUpload = await cloudinary.uploader.upload(imageUrl, {folder: "plant-photos"});
-          res.json({
-            url: imageUpload.secure_url,
-            public_id: imageUpload.public_id,
-          })
-        } catch (error) {
-          console.error(error);
-          res.status(500).json({
-            error: error.message
-          })
-        }
+      if (req.file) {
+        plant.imageUrl = req.file.path; // Change plant photo
       }
       if (birthday) {
         plant.birthday = birthday; // Change birthday
