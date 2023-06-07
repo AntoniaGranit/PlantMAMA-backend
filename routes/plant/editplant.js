@@ -18,6 +18,7 @@ cloudinary.config({
 // Authenticate user
 const authenticateUser = async (req, res, next) => {
     const accessToken = req.header("Authorization");
+    console.log("hello")
     try {
       const user = await User.findOne({accessToken: accessToken});
       if (user) {
