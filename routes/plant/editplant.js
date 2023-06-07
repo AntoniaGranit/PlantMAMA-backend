@@ -55,7 +55,7 @@ router.patch('/:username/garden/:plantId', async (req, res) => {
         plant.species = species; // Change species
       }
       if (imageUrl) {
-        plant.imageUrl = imageUrl; // Change plant photo
+        plant.imageUrl = imageUpload.secure_url; // Change plant photo
         // testing image upload to cloudinary
         try {
           const imageUpload = await cloudinary.uploader.upload(imageUrl, {folder: "plants"});
