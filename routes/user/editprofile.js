@@ -1,8 +1,29 @@
+import multer from 'multer'
+import { CloudinaryStorage } from 'multer-storage-cloudinary'
 const express = require('express');
 const router = express.Router();
 
 // Import schemas
 const User = require('../../schemas/user');
+
+// Declaration of variables to use cloudinary instance
+const cloudinary = require('cloudinary').v2;
+
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'users'
+  },
+});
+
+const upload = multer({ storage });
 
 // Authenticate user
 const authenticateUser = async (req, res, next) => {
@@ -27,21 +48,24 @@ const authenticateUser = async (req, res, next) => {
 
 // Edit user profile
 router.patch("/:username", authenticateUser);
-router.patch("/:username", async (req, res) => {
+router.patch("/:username", upload.single('image'), async (req, res) => {
   try {
     const accessToken = req.header("Authorization");
     const user = await User.findOne({ accessToken: accessToken });
     const username = req.params.username;
     if (user.username === username) {
-      const { username, email, password } = req.body;
+      const { username, email, password, location } = req.body;
       if (username) {
         user.username = username; // Change username
       }
-      // if (location) {
-      //   user.location = location; // Change location
-      // }
+      if (location) {
+        user.location = location; // Change location
+      }
       if (email) {
         user.email = email; // Change email
+      }
+      if (req.file) {
+        user.imageUrl = req.file.path; // Change user photo
       }
       if (password) {
         const salt = bcrypt.genSaltSync();
