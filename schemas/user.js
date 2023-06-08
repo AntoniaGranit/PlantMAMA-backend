@@ -18,10 +18,12 @@ const UserSchema = new mongoose.Schema({
         }
       }
     },
-    // location: {
-    //   type: String,
-    //   required: true
-    // },
+    location: {
+      type: String
+    },
+    imageUrl: {
+      type: String
+    },
     // numberOfPlants: {
     //   type: Number
     // },
