@@ -34,6 +34,13 @@ const userprofile = require('./routes/user/userprofile');
 const editprofile = require('./routes/user/editprofile');
 const deleteuser = require('./routes/user/deleteuser');
 
+// Import task routes
+
+const addtask = require('./routes/task/addtask');
+const deletetask = require('./routes/task/deletetask');
+const edittask = require('./routes/task/editask');
+const tasklist = require('./routes/task/tasklist');
+
 // Use plant routes
 app.use('/', addplant);
 app.use('/', plantprofile);
@@ -47,6 +54,13 @@ app.use('/', login);
 app.use('/', userprofile);
 app.use('/', editprofile);
 app.use('/', deleteuser);
+
+// Use task routes
+app.use('/', addtask);
+app.use('/', deletetask);
+app.use('/', edittask);
+app.use('/', tasklist);
+
 
 
 // Index route
