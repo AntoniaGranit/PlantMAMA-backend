@@ -18,7 +18,13 @@ const UserSchema = new mongoose.Schema({
         }
       }
     },
-    location: {
+    city: {
+      type: String
+    },
+    level: {
+      type: String
+    },
+    bio: {
       type: String
     },
     imageUrl: {

@@ -54,15 +54,21 @@ router.patch("/:username", upload.single('image'), async (req, res) => {
     const user = await User.findOne({ accessToken: accessToken });
     const username = req.params.username;
     if (user.username === username) {
-      const { username, email, password, location } = req.body;
+      const { username, email, city, level, bio, password } = req.body;
       if (username) {
         user.username = username; // Change username
       }
-      if (location) {
-        user.location = location; // Change location
-      }
       if (email) {
         user.email = email; // Change email
+      }
+      if (city) {
+        user.city = city; // Change city
+      }
+      if (level) {
+        user.level = level; // Change city
+      }
+      if (bio) {
+        user.bio = bio; // Change city
       }
       if (req.file) {
         user.imageUrl = req.file.path; // Change user photo
