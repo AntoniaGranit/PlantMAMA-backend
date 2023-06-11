@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
     },
     imageUrl: {
       type: String,
-      default: 'https://res.cloudinary.com/dh943gnqh/image/upload/v1686508049/defaultprofpic_nr87vr.png'
+      default: 'https://res.cloudinary.com/dh943gnqh/image/upload/v1686508699/profilepic_mhqftt.svg'
     },
     // numberOfPlants: {
     //   type: Number

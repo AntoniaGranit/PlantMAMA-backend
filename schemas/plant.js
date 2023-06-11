@@ -11,7 +11,7 @@ const PlantSchema = new mongoose.Schema({
     },
     imageUrl: {
       type: String,
-      default: 'https://picsum.photos/id/106/200/200'
+      default: 'https://res.cloudinary.com/dh943gnqh/image/upload/v1686509048/plantvector_h0epmf.png'
     },
     birthday: {
       type: Date,
