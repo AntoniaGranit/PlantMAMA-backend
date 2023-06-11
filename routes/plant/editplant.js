@@ -20,7 +20,8 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'plants'
+    folder: 'plants',
+    transformation: [{ width: 500, height: 500, crop: 'limit' }]
   },
 });
 

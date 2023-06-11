@@ -19,7 +19,8 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'users'
+    folder: 'users',
+    transformation: [{ width: 500, height: 500, crop: 'limit' }]
   },
 });
 
