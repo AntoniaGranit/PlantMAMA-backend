@@ -53,7 +53,7 @@ router.patch('/:username/garden/:plantId', upload.single('image'), async (req, r
   try {
     const accessToken = req.header('Authorization');
     const user = await User.findOne({ accessToken: accessToken });
-    const { plantname, species, birthday } = req.body;
+    const { plantname, species, birthday, lastWatered, lastSoilChange } = req.body;
     const plantId = req.params.plantId;
     // Find the plant by ID and make sure it belongs to the user
     const plant = await Plant.findOne({ _id: plantId, user: user._id });
@@ -71,7 +71,12 @@ router.patch('/:username/garden/:plantId', upload.single('image'), async (req, r
       if (birthday) {
         plant.birthday = birthday; // Change birthday
       }
-
+      if (lastWatered) {
+        plant.lastWatered = lastWatered; 
+      }
+      if (lastSoilChange) {
+        plant.lastSoilChange = lastSoilChange; 
+      }
       await plant.save(); // Save the updated plant
       res.status(200).json({
         success: true,
