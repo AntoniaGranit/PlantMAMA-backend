@@ -10,7 +10,8 @@ const PlantSchema = new mongoose.Schema({
       required: true
     },
     imageUrl: {
-      type: String
+      type: String,
+      default: 'https://picsum.photos/id/106/200/200'
     },
     birthday: {
       type: Date,

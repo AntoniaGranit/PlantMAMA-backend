@@ -28,7 +28,8 @@ const UserSchema = new mongoose.Schema({
       type: String
     },
     imageUrl: {
-      type: String
+      type: String,
+      default: 'https://picsum.photos/id/40/200/200'
     },
     // numberOfPlants: {
     //   type: Number
