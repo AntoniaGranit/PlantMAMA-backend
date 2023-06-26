@@ -2,6 +2,7 @@ import multer from 'multer'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
 const express = require('express');
 const router = express.Router();
+const authenticateUser = require('../authenticateuser');
 
 // Import schemas
 const User = require('../../schemas/user');
@@ -25,27 +26,6 @@ const storage = new CloudinaryStorage({
 });
 
 const upload = multer({ storage });
-
-// Authenticate user
-const authenticateUser = async (req, res, next) => {
-    const accessToken = req.header("Authorization");
-    try {
-      const user = await User.findOne({accessToken: accessToken});
-      if (user) {
-        next();
-      } else {
-        res.status(401).json({
-          success: false,
-          response: "Please log in"
-        })
-      } 
-    } catch (e) {
-      res.status(500).json({
-        success: false,
-        response: e
-      })
-    }
-  };
 
 // Edit user profile
 router.patch("/:username", authenticateUser);
