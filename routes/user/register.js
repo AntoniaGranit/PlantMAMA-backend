@@ -5,6 +5,7 @@ const router = express.Router();
 
 // Import schemas
 const User = require('../../schemas/user');
+const Plant = require('../../schemas/plant');
 
 router.post("/register", async (req, res) => {
     const { username, email, password } = req.body;
@@ -14,7 +15,12 @@ router.post("/register", async (req, res) => {
         username: username,
         email: email,
         password: bcrypt.hashSync(password, salt)
-      }).save()
+      }).save();
+      const newPlant = await new Plant({
+        plantname: 'Poison',
+        species: 'Ivy',
+        user: newUser._id,
+      }).save();
       // 201 status code - successful creation of user
       res.status(201).json({
         success: true,
