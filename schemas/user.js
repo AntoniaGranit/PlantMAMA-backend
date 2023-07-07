@@ -10,7 +10,6 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
       type: String,
-      required: [true, "Email is required!"],
       unique: true,
       validate(value) {
         if(!validator.isEmail(value)) {
@@ -19,13 +18,16 @@ const UserSchema = new mongoose.Schema({
       }
     },
     city: {
-      type: String
+      type: String,
+      default: 'Earth',
     },
     level: {
-      type: String
+      type: String,
+      default: 'Beginner',
     },
     bio: {
-      type: String
+      type: String,
+      default: '80 years old. I love Ice cream and plants. Less disappointing than humans, less demanding than a cat, plants are the perfect partners for anyone who is trying to balance work, money, commitments and a desire to live surrounded by beauty. Plants make you feel good (#science) and looking after your green frondy friends brings joy into your life.',
     },
     imageUrl: {
       type: String,
