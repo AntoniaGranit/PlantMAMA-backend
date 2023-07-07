@@ -1,6 +1,6 @@
 import crypto from "crypto";
 const mongoose = require('mongoose');
-const validator = require('validator');
+// const validator = require('validator');
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
       type: String,
       unique: true,
       validate(value) {
-        if(!validator.isEmail(value)) {
+        if(email && !validator.isEmail(value)) {
           throw new Error('Invalid email address');
         }
       }
