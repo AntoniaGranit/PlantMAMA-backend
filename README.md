@@ -1,11 +1,13 @@
-# Express API Starter Project
+# Backend for Project PlantMama
 
-This project includes the packages and babel setup for an express server, and is just meant to make things a little simpler to get up and running with.
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) 
 
-## Getting started
+This is the backend code for my and [Sara Battilotti's](https://github.com/SaraBat) final project for the Technigo Web Development bootcamp. The app allows user to care for their houseplants, upload photos of them, and get inspiration from an external API for their next houseplant purchase. 
 
-Install dependencies with `npm install`, then start the server by running `npm run dev`
+## View frontend repository
+
+https://github.com/SaraBat/PlantMAMA-frontend
 
 ## View it live
 
-Every project should be deployed somewhere. Be sure to include the link to the deployed project so that the viewer can click around and see what it's all about.
+https://plantmama-backend-dcpvdmziha-od.a.run.app
